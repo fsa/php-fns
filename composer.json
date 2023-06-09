@@ -1,0 +1,20 @@
+{
+    "name": "fsa/fns",
+    "description": "FNS library",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Sergei Fedotov",
+            "email": "fsa@tavda.info"
+        }
+    ],
+    "license": "GPL-3.0-or-later",
+    "autoload": {
+        "psr-4": {
+            "FSA\\FNS\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.1"
+    }
+}
