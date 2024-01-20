@@ -14,7 +14,7 @@ class CheckDecoder implements Iterator
     {
     }
 
-    public function load(string $json)
+    public function load(string $json): void
     {
         $this->checks_json = $json;
         try {
@@ -23,16 +23,16 @@ class CheckDecoder implements Iterator
             throw new CheckFormatException('Decode error: broken JSON.');
         }
         if (!is_array($this->checks)) {
-            throw new CheckFormatException('Forman error: array required.');
+            throw new CheckFormatException('Format error: array required.');
         }
     }
 
-    public function current()
+    public function current(): Check
     {
         return new Check(current($this->checks));
     }
 
-    public function key()
+    public function key(): int
     {
         return key($this->checks);
     }

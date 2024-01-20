@@ -19,9 +19,11 @@ class CheckItem
     private string $productCodeDataError;
 
     private array $undefined = [];
+    private object $raw;
 
     public function __construct(private string $_id, object $item)
     {
+        $this->raw = $item;
         foreach (['name', 'nds', 'paymentType', 'price', 'quantity', 'sum'] as $key) {
             if (!isset($item->$key)) {
                 throw new CheckFormatException("Item format error: {$item->name}");
@@ -95,5 +97,10 @@ class CheckItem
     public function getOther(): ?object
     {
         return count($this->undefined)?(object)($this->undefined):null;
+    }
+
+    public function __toString()
+    {
+        return json_encode($this->raw, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
     }
 }

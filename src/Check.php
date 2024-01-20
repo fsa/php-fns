@@ -2,6 +2,8 @@
 
 namespace FSA\FNS;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use Iterator;
 
 class Check implements Iterator
@@ -15,24 +17,24 @@ class Check implements Iterator
             throw new CheckFormatException("Check items not found. Wrong file?");
         }
         if (!isset($raw->ticket->document->receipt->items)) {
-                throw new CheckFormatException("Check items not found in {$raw->_id}");
+            throw new CheckFormatException("Check items not found in {$raw->_id}");
         }
         foreach ($raw->ticket->document->receipt->items as $item) {
             $this->items[] = new CheckItem($raw->_id, $item);
         }
-        foreach ($raw as $key => $value) {
+        foreach ($raw->ticket->document->receipt as $key => $value) {
             if (is_int($value) or is_float($value) or is_string($value)) {
                 $this->properties[$key] = $value;
             }
         }
     }
 
-    public function current()
+    public function current(): CheckItem
     {
         return current($this->items);
     }
 
-    public function key()
+    public function key(): int
     {
         return key($this->items);
     }
@@ -52,4 +54,74 @@ class Check implements Iterator
         return null !== key($this->items);
     }
 
+    public function getUser(): string
+    {
+        isset($this->properties['user']) or throw new CheckFormatException('user not set');
+
+        return $this->properties['user'];
+    }
+
+    public function getUserInn(): string
+    {
+        isset($this->properties['userInn']) or throw new CheckFormatException('userInn not set');
+
+        return trim($this->properties['userInn']);
+    }
+
+    public function getDateTime(): DateTimeImmutable
+    {
+        isset($this->properties['dateTime']) or throw new CheckFormatException('dateTime not set');
+
+        return new DateTimeImmutable($this->properties['dateTime'], new DateTimeZone('UTC'));
+    }
+
+    public function getRetailPlace(): string
+    {
+        isset($this->properties['retailPlace']) or throw new CheckFormatException('retailPlace not set');
+
+        return $this->properties['retailPlace'];
+    }
+
+    public function getRetailPlaceAddress(): ?string
+    {
+        return isset($this->properties['retailPlaceAddress']) ? $this->properties['retailPlaceAddress'] : null;
+    }
+
+    public function getOperator(): ?string
+    {
+        return isset($this->properties['operator']) ? $this->properties['operator'] : null;
+    }
+
+    public function getTotalSum(): string
+    {
+        isset($this->properties['totalSum']) or throw new CheckFormatException('totalSum not set');
+
+        return $this->properties['totalSum'];
+    }
+
+    public function getFiscalDriveNumber(): string
+    {
+        isset($this->properties['fiscalDriveNumber']) or throw new CheckFormatException('fiscalDriveNumber not set');
+
+        return $this->properties['fiscalDriveNumber'];
+    }
+
+    public function getFiscalDocumentNumber(): int
+    {
+        isset($this->properties['fiscalDocumentNumber']) or throw new CheckFormatException('fiscalDocumentNumber not set');
+
+        return $this->properties['fiscalDocumentNumber'];
+    }
+
+    public function getFiscalSign(): int
+    {
+        isset($this->properties['fiscalSign']) or throw new CheckFormatException('fiscalSign not set');
+
+        return $this->properties['fiscalSign'];
+    }
+
+    public function __toString()
+    {
+        return json_encode($this->raw, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
+    }
 }
