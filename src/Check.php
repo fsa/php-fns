@@ -16,16 +16,27 @@ class Check implements Iterator
         if (!isset($raw->_id)) {
             throw new CheckFormatException("Check items not found. Wrong file?");
         }
-        if (!isset($raw->ticket->document->receipt->items)) {
-            throw new CheckFormatException("Check items not found in {$raw->_id}");
-        }
-        foreach ($raw->ticket->document->receipt->items as $item) {
-            $this->items[] = new CheckItem($raw->_id, $item);
-        }
-        foreach ($raw->ticket->document->receipt as $key => $value) {
-            if (is_int($value) or is_float($value) or is_string($value)) {
-                $this->properties[$key] = $value;
+        if (isset($raw->ticket->document->receipt->items)) {
+            foreach ($raw->ticket->document->receipt->items as $item) {
+                $this->items[] = new CheckItem($raw->_id, $item);
             }
+            foreach ($raw->ticket->document->receipt as $key => $value) {
+                if (is_int($value) or is_float($value) or is_string($value)) {
+                    $this->properties[$key] = $value;
+                }
+            }
+        } else if (isset($raw->ticket->document->bso->items)) {
+            // Бланк строгой отчётности
+            foreach ($raw->ticket->document->bso->items as $item) {
+                $this->items[] = new CheckItem($raw->_id, $item);
+            }
+            foreach ($raw->ticket->document->bso as $key => $value) {
+                if (is_int($value) or is_float($value) or is_string($value)) {
+                    $this->properties[$key] = $value;
+                }
+            }
+        } else {
+            throw new CheckFormatException("Check items not found in {$raw->_id}");
         }
     }
 
