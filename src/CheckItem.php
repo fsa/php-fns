@@ -24,9 +24,9 @@ class CheckItem
     public function __construct(private string $_id, object $item)
     {
         $this->raw = $item;
-        foreach (['name', 'nds', 'paymentType', 'price', 'quantity', 'sum'] as $key) {
+        foreach (['name', 'paymentType', 'price', 'quantity', 'sum'] as $key) {
             if (!isset($item->$key)) {
-                throw new CheckFormatException("Item format error: {$item->name}");
+                throw new CheckFormatException("Item format error: «{$item->name}», field {$key} not found");
             }
         }
         foreach ($item as $key => $value) {
