@@ -86,11 +86,9 @@ class Check implements Iterator
         return new DateTimeImmutable($this->properties['dateTime'], new DateTimeZone('UTC'));
     }
 
-    public function getRetailPlace(): string
+    public function getRetailPlace(): ?string
     {
-        isset($this->properties['retailPlace']) or throw new CheckFormatException('retailPlace not set');
-
-        return $this->properties['retailPlace'];
+        return isset($this->properties['retailPlace']) ? $this->properties['retailPlace'] : null;
     }
 
     public function getRetailPlaceAddress(): ?string
