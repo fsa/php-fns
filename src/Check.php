@@ -101,7 +101,7 @@ class Check implements Iterator
         return isset($this->properties['operator']) ? $this->properties['operator'] : null;
     }
 
-    public function getTotalSum(): string
+    public function getTotalSum(): int
     {
         isset($this->properties['totalSum']) or throw new CheckFormatException('totalSum not set');
 
